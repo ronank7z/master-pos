@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  email String @unique @db.VarChar(50)
+  dateOfBirth DateTime? @db.Date
+  address String? @db.VarChar(200)
+  phoneNumber String? @db.VarChar(20)
+  role String @db.VarChar(20)
+  createdAt DateTime @db.Timestamp @default(now())
+  updatedAt DateTime? @updatedAt
+  Warehouse Warehouse[]
+}
+
+model Warehouse {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  pic User @relation(fields: [picId], references: [id])
+  picId Int
+  createdAt DateTime @db.Date @default(now())
+  updatedAt DateTime? @updatedAt
+  Product Product[]
+}
+
+model Supplier {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  city String @db.VarChar(100)
+  country String @db.VarChar(100)
+  zipCode String @db.VarChar(100)
+  address String @db.VarChar(100)
+  phoneNumber String @db.VarChar(100)
+  createdAt DateTime @db.Date @default(now())
+  updatedAt DateTime? @updatedAt
+  Product Product[]
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  brand String @db.VarChar(100)
+  category String @db.VarChar(100)
+  type String @db.VarChar(100)
+  maxWeight Int @db.Integer()
+  purchasePrice Int @db.Integer()
+  sellingPrice Int @db.Integer()
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+  supplierId Int
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  warehouseId Int
+  createdAt DateTime @db.Date @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Member {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  email String @unique @db.VarChar(50)
+  dateOfBirth DateTime? @db.Date
+  address String? @db.VarChar(200)
+  phoneNumber String? @db.VarChar(20)
+  createdAt DateTime @db.Date @default(now())
+  updatedAt DateTime? @updatedAt
+}

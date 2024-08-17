@@ -1,0 +1,23 @@
+{
+	"name": "nuxt-app",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare"
+	},
+	"dependencies": {
+		"@nuxt/fonts": "^0.7.1",
+		"@nuxt/ui": "^2.18.4",
+		"@prisma/nuxt": "^0.0.35",
+		"date-fns": "^3.6.0",
+		"nuxt": "^3.12.4",
+		"v-calendar": "^3.1.2"
+	},
+	"devDependencies": {
+		"@prisma/client": "^5.18.0"
+	}
+}
