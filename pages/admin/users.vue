@@ -75,12 +75,12 @@ const searchValue = ref("");
 function addModal(role) {
 	modal.open(AddModal, {
 		role: role,
-		async onSuccess(user) {
+		async onSuccess(item) {
 			modal.close();
 			toast.add({
 				title: "Success !",
 				id: "modal-success",
-				description: `User ${user.name} added`,
+				description: `User ${item.name} added`,
 			});
 			dataUser.value = await fetchUsers();
 		},
@@ -90,15 +90,15 @@ function addModal(role) {
 	});
 }
 
-function deleteModal(user) {
+function deleteModal(item) {
 	modal.open(DeleteModal, {
-		user: user,
+		item: item,
 		async onSuccess() {
 			modal.close();
 			toast.add({
 				title: "Success !",
 				id: "modal-success",
-				description: `User ${user.name} deleted`,
+				description: `User ${item.name} deleted`,
 			});
 			dataUser.value = await fetchUsers();
 		},
@@ -108,16 +108,16 @@ function deleteModal(user) {
 	});
 }
 
-function editModal(role, user) {
+function editModal(role, item) {
 	modal.open(EditModal, {
 		role: role,
-		user: user,
+		item: item,
 		async onSuccess() {
 			modal.close();
 			toast.add({
 				title: "Success",
 				id: "modal-success",
-				description: `User ${user.name} edited!`,
+				description: `User ${item.name} edited!`,
 			});
 			dataUser.value = await fetchUsers();
 		},
