@@ -7,4 +7,7 @@ export default defineNuxtConfig({
 		preference: "dark",
 	},
 	css: ["~/assets/css/main.css"],
+	prisma: {
+		autoSetupPrisma: true,
+	},
 });
