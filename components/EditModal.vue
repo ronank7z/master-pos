@@ -1,11 +1,33 @@
-<script setup>
+<script setup lang="ts">
 import { format } from "date-fns";
+import { z } from "zod";
+import type { FormSubmitEvent } from "#ui/types";
+
+const schema = z.object({
+	name: z
+		.string()
+		.min(3, "Must be at least 3 character")
+		.max(100, "Max character excedeed"),
+	email: z.string().email("Invalid email").max(50, "Max character excedeed"),
+	dateOfBirth: z.date(),
+	address: z
+		.string()
+		.min(3, "Must be at least 3 character")
+		.max(200, "Max character excedeed"),
+	phoneNumber: z
+		.string()
+		.min(10, "Must be at least 10 character")
+		.max(20, "Max character excedeed"),
+	role: z.string(),
+});
+
+type Schema = z.output<typeof schema>;
 
 const prop = defineProps({
 	role: {
 		type: Array,
 	},
-	user: {
+	item: {
 		type: Object,
 	},
 });
@@ -13,21 +35,21 @@ const prop = defineProps({
 const loading = ref(false);
 
 const userFormInput = ref({
-	name: prop.user?.name,
-	email: prop.user?.email,
-	dateOfBirth: prop.user?.dateOfBirth,
-	address: prop.user?.address,
-	phoneNumber: prop.user?.phoneNumber,
-	role: prop.user?.role,
+	name: prop.item?.name,
+	email: prop.item?.email,
+	dateOfBirth: new Date(prop.item?.dateOfBirth),
+	address: prop.item?.address,
+	phoneNumber: prop.item?.phoneNumber,
+	role: prop.item?.role,
 });
 
 const emit = defineEmits(["success", "cancel"]);
 
-async function onSubmit(id) {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
 	loading.value = true;
-	await $fetch(`/api/users/${id}`, {
+	await $fetch(`/api/users/${prop?.item?.id}`, {
 		method: "put",
-		body: { id: id, data: userFormInput.value },
+		body: { id: prop?.item?.id, data: event.data },
 	});
 	onSuccess();
 }
@@ -54,57 +76,61 @@ function onCancel() {
 				padded
 				@click="onCancel" />
 		</div>
-		<div class="p-4 space-y-6">
-			<UFormGroup label="Name" required class="space-y-3">
-				<UInput
-					v-model="userFormInput.name"
-					placeholder="John Doe"
-					icon="i-heroicons-user" />
-			</UFormGroup>
-			<UFormGroup label="Email" required class="space-y-3">
-				<UInput
-					v-model="userFormInput.email"
-					placeholder="you@example.com"
-					icon="i-heroicons-envelope" />
-			</UFormGroup>
-			<UFormGroup label="Date of birth" required class="space-y-3">
-				<UPopover :popper="{ placement: 'bottom-start' }">
-					<UButton
-						icon="i-heroicons-calendar-days-20-solid"
-						:label="format(userFormInput.dateOfBirth, 'yyy-MM-d')" />
-
-					<template #panel="{ close }">
-						<DatePicker
-							v-model="userFormInput.dateOfBirth"
-							is-required
-							@close="close" />
-					</template>
-				</UPopover>
-			</UFormGroup>
-			<UFormGroup label="Address" required class="space-y-3">
-				<UInput
-					v-model="userFormInput.address"
-					placeholder="St. 123"
-					icon="i-heroicons-home" />
-			</UFormGroup>
-			<UFormGroup label="Phone number" required class="space-y-3">
-				<UInput
-					v-model="userFormInput.phoneNumber"
-					placeholder="+628xxxxxxxxxxxx"
-					icon="i-heroicons-phone" />
-			</UFormGroup>
-			<UFormGroup label="Role" required class="space-y-3">
-				<UInputMenu v-model="userFormInput.role" :options="prop.role" />
-			</UFormGroup>
+		<UForm
+			:schema="schema"
+			:state="userFormInput"
+			@submit="onSubmit"
+			class="p-4 space-y-6">
+			<InputTextField
+				label="Name"
+				name="name"
+				required
+				v-model:model="userFormInput.name"
+				placeholder="John Doe"
+				icon="i-heroicons-user" />
+			<InputTextField
+				label="Email"
+				name="email"
+				required
+				v-model:model="userFormInput.email"
+				placeholder="you@example.com"
+				icon="i-heroicons-envelope" />
+			<InputDateField
+				label="Date of birth"
+				name="dateOfBirth"
+				required
+				v-model:model="userFormInput.dateOfBirth"
+				:dateLabel="format(userFormInput.dateOfBirth, 'yyy-MM-dd')"
+				icon="i-heroicons-calendar-days-20-solid" />
+			<InputTextField
+				label="Address"
+				name="address"
+				required
+				v-model:model="userFormInput.address"
+				placeholder="St. 123"
+				icon="i-heroicons-home" />
+			<InputTextField
+				label="Phone number"
+				name="phoneNumber"
+				required
+				v-model:model="userFormInput.phoneNumber"
+				placeholder="+628xxxxxxxxxxxx"
+				icon="i-heroicons-phone" />
+			<InputMenuField
+				label="Role"
+				name="role"
+				required
+				v-model:model="userFormInput.role"
+				:options="role" />
 			<div class="flex justify-end space-x-3">
 				<UButton
+					type="submit"
 					label="Confirm"
 					color="primary"
 					variant="solid"
 					size="lg"
 					:loading="loading"
-					:disabled="loading"
-					@click="onSubmit(user.id)" />
+					:disabled="loading" />
 				<UButton
 					label="Cancel"
 					color="red"
@@ -113,6 +139,6 @@ function onCancel() {
 					:disabled="loading"
 					@click="onCancel" />
 			</div>
-		</div>
+		</UForm>
 	</UModal>
 </template>

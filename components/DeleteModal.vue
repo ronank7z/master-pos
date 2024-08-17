@@ -1,6 +1,6 @@
-<script setup>
-defineProps({
-	user: {
+<script setup lang="ts">
+const prop = defineProps({
+	item: {
 		type: Object,
 	},
 });
@@ -9,9 +9,9 @@ const loading = ref(false);
 
 const emit = defineEmits(["success", "cancel"]);
 
-async function onDelete(id) {
+async function onDelete() {
 	loading.value = true;
-	const resp = await $fetch(`/api/users/${id}`, {
+	await $fetch(`/api/users/${prop?.item?.id}`, {
 		method: "delete",
 	});
 	onSuccess();
@@ -31,7 +31,7 @@ function onCancel() {
 	<UModal>
 		<UCard>
 			<p>
-				Confirm delete <span class="font-bold">{{ user.name }}</span> ?
+				Confirm delete <span class="font-bold">{{ prop?.item?.name }}</span> ?
 			</p>
 			<div class="space-x-3 mt-5 flex justify-end">
 				<UButton
@@ -39,7 +39,7 @@ function onCancel() {
 					color="red"
 					:loading="loading"
 					:disabled="loading"
-					@click="onDelete(user.id)"
+					@click="onDelete"
 					>Delete</UButton
 				>
 				<UButton variant="soft" :disabled="loading" @click="onCancel"
